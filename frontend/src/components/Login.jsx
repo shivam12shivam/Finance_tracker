@@ -34,7 +34,7 @@ export default function LogIn() {
           token: res.data.token,
         })
       );
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       setLoginError(error.message || "Login failed. Please try again.");
     } finally {
