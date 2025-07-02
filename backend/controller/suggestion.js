@@ -1,4 +1,4 @@
-import Expense from "../models/expense.js";
+import Expense from "../models/Expense.js";
 import { spawn } from "child_process";
 
 export const generateSmartSuggestions = async (req, res) => {

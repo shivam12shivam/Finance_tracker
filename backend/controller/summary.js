@@ -1,5 +1,5 @@
 import pool from "../db/mysql.js";
-import Expense from "../models/expense.js";
+import Expense from "../models/Expense.js";
 import Limit from "../models/Limit.js";
 
 export const generateMonthlySummary = async (req, res) => {
