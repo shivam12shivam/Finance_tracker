@@ -7,9 +7,10 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", (req, res) => {
   console.log("inside logout \n");
-  res.cookie("token", "", {
+  res.clearCookie("token", {
     httpOnly: true,
-    expires: new Date(0),
+    sameSite: "None",
+    secure: true, // must be true if using HTTPS (which Render does)
   });
   res.status(200).json({ message: "Logged out successfully" });
 });

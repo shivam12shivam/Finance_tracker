@@ -41,7 +41,7 @@ export default function DrawerAppBar(props) {
       );
 
       dispatch(setLogout());
-      navigate("/");
+      navigate("/signup");
     } catch (err) {
       console.error("Logout failed:", err.message);
     }
