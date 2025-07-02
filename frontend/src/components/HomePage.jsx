@@ -62,7 +62,7 @@ export default function HomePage() {
   };
   const handleSetLimit = async () => {
     await axios.post(
-      "http://localhost:3000/limits",
+      "https://finance-tracker-bgrn.onrender.com/limits",
       { ...limitForm, month: currentMonth },
       { withCredentials: true }
     );
@@ -121,14 +121,14 @@ export default function HomePage() {
   const handleSubmit = async () => {
     if (editingId) {
       const res = await axios.put(
-        `http://localhost:3000/expenses/${editingId}`,
+        `https://finance-tracker-bgrn.onrender.com/expenses/${editingId}`,
         form,
         { withCredentials: true }
       );
       console.log("response from backend when updating ", res.data);
     } else {
       console.log("form", form);
-      const res = await axios.post("http://localhost:3000/expenses/add", form, {
+      const res = await axios.post("https://finance-tracker-bgrn.onrender.com/expenses/add", form, {
         withCredentials: true,
       });
       console.log("response from backend", res.data);
@@ -191,7 +191,7 @@ export default function HomePage() {
             color="secondary"
             onClick={async () => {
               const res = await axios.post(
-                "http://localhost:3000/summary/save",
+                "https://finance-tracker-bgrn.onrender.com/summary/save",
                 {},
                 { withCredentials: true }
               );

@@ -35,11 +35,11 @@ export default function DrawerAppBar(props) {
   const handleLogout = async () => {
     try {
       await axios.post(
-        "http://localhost:3000/auth/logout",
+        "https://finance-tracker-bgrn.onrender.com/auth/logout",
         {},
         { withCredentials: true }
       );
-      
+
       dispatch(setLogout());
       navigate("/");
     } catch (err) {
