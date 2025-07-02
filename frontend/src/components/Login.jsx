@@ -23,7 +23,7 @@ export default function LogIn() {
     try {
       // Replace with your actual login API call
       console.log("Login data:", data);
-      const res = await axios.post("https://finance-tracker-gold-delta.vercel.app/auth/login", data, {
+      const res = await axios.post("https://finance-tracker-bgrn.onrender.com/auth/login", data, {
         withCredentials: true,
       });
       console.log("response from backend", res.data);
