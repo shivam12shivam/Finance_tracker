@@ -57,15 +57,15 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={isAuth ? <HomePage /> : <LogIn />}
+          element={isAuth ? <Navigate to="/home" /> : <LogIn />}
         />
         <Route
           path="/signup"
-          element={isAuth ? <Navigate to="/" /> : <SignUp />}
+          element={isAuth ? <Navigate to="/home" /> : <SignUp />}
         />
         <Route
           path="/home"
-          element={isAuth ? <Navigate to="/" /> : <Navigate to="/signup" />}
+          element={isAuth ? <HomePage /> : <Navigate to="/signup" />}
         />
         <Route
           path="/dashboard"
