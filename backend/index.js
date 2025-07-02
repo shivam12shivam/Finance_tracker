@@ -1,14 +1,15 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
 import express from "express";
-import authRoutes from "./routes/auth.js";
-import cors from "cors";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+
+import authRoutes from "./routes/auth.js";
 import expenseRoutes from "./routes/expense.js";
 import limitRoutes from "./routes/limit.js";
 import summaryRoutes from "./routes/summary.js";
-import { initMySQLTables } from "./models/summary.js";
 import suggestionRoutes from "./routes/suggestion.js";
+import { initPostgresTables } from "./models/summary.js";
 
 dotenv.config();
 const app = express();
@@ -24,7 +25,7 @@ app.use(
   })
 );
 console.log("insde backend index.js");
-await initMySQLTables();
+await initPostgresTables();
 
 app.use("/summary", summaryRoutes);
 app.use("/auth", authRoutes);
