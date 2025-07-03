@@ -1,37 +1,45 @@
+import OpenAI from "openai";
 import Expense from "../models/Expense.js";
-import { spawn } from "child_process";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export const generateSmartSuggestions = async (req, res) => {
   try {
     const userId = req.user._id;
     const expenses = await Expense.find({ userId });
-    console.log("Generating smart suggestions for user:", userId);
-    const input = expenses.map((e) => ({
+
+    const formatted = expenses.map((e) => ({
       amount: Number(e.amount),
       category: e.category,
       date: e.date.toISOString().split("T")[0],
     }));
-    console.log("before calling python script");
-    const py = spawn("python", ["utils/analyze_expenses.py"]);
-    let data = "";
-    console.log("after calling python script");
 
-    py.stdin.write(JSON.stringify(input));
-    py.stdin.end();
+    const prompt = `
+You are a smart finance assistant. Based on this user's expense data, suggest 3 ways they can save money this month.
 
-    py.stdout.on("data", (chunk) => {
-      data += chunk.toString();
+Here are the expenses: ${JSON.stringify(formatted)}
+
+Provide your response as a list of 3 short, actionable bullet points.
+`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
     });
 
-    py.on("close", () => {
-      try {
-        const suggestions = JSON.parse(data);
-        res.json(suggestions);
-      } catch (err) {
-        res.json({ message: "Failed to parse Python response" });
-      }
-    });
+    const suggestionsText = response.choices[0].message.content;
+    const suggestions = suggestionsText.split("\n").filter((line) => line.trim());
+    
+    res.json(suggestions);
   } catch (err) {
-    res.json({ message: err.message });
+    console.error("Error generating suggestions:", err.message);
+    res.json([
+      "Track recurring subscriptions and cancel unused ones.",
+      "Reduce eating out expenses and cook more meals at home.",
+      "Set a weekly cash spending limit and stick to it."
+    ]);
   }
 };

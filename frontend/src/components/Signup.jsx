@@ -28,7 +28,7 @@ export default function SignUp() {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center bg-[#B7D5D4] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen overflow-hidden -mt-16 flex items-center justify-center bg-[#B7D5D4] py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md sm:max-w-lg lg:max-w-md mx-auto p-6 sm:p-8 bg-[#b6d1bc] rounded-lg shadow-md">
           <h2 className="text-3xl font-bold mb-6 text-center">
             User Registration

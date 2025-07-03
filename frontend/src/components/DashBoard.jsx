@@ -91,7 +91,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[#d4b9af9e]  p-4 rounded shadow h-[28rem]">
+        <div className="bg-[#FCE6E6]  p-4 rounded shadow h-[28rem]">
           <h2 className="text-lg font-semibold mb-4 text-center">
             Category-wise Spending
           </h2>
