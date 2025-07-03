@@ -21,7 +21,7 @@ router.get("/check-auth", verifyToken, async (req, res) => {
     const token = req.cookies.token;
     res.status(200).json({
       user: req.user,
-      token: token, // Send the token in the response
+      token: token, 
     });
   } catch (error) {
     res.status(500).json({ message: "Server error" });

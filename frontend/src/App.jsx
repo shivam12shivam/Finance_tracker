@@ -35,15 +35,16 @@ function App() {
             setLogin({
               user: response.data.user,
               isAuthenticated: true,
-              token: response.data.token, // Adjust based on your API response
+              token: response.data.token, 
             })
           );
           console.log("is Auth status: ", isAuth);
         }
-      }
-      catch (error) {
-        // Clear any invalid token
+      } catch (error) {
+
+        console.error("Authentication check failed:", error);
         
+  
       }
     };
     if (!isAuth) {

@@ -21,7 +21,7 @@ export default function LogIn() {
     setLoginError("");
 
     try {
-      // Replace with your actual login API call
+      
       console.log("Login data:", data);
       const res = await axios.post("https://finance-tracker-bgrn.onrender.com/auth/login", data, {
         withCredentials: true,
