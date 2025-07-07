@@ -5,6 +5,7 @@ import axios from "axios";
 
 export default function SignUp() {
   const [submittedData, setSubmittedData] = useState(null);
+  const [exist, setExist] = useState(false);
   const navigate = useNavigate();
   const {
     register,
@@ -20,10 +21,12 @@ export default function SignUp() {
     setSubmittedData(formData);
     console.log(formData);
     const res = await axios.post(
-      "https://finance-tracker-bgrn.onrender.com/auth/register",
+      "http://localhost:3000/auth/register",
       formData
     );
+    reset();
     console.log("response from backend", res.data.message);
+    setExist(res.data.message);
   };
 
   return (
@@ -33,6 +36,13 @@ export default function SignUp() {
           <h2 className="text-3xl font-bold mb-6 text-center">
             User Registration
           </h2>
+          {exist && (
+            <div className="mb-4">
+              <p className="text-red-600 text-center">
+                {exist}
+              </p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>

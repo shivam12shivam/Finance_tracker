@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://finance-tracker-gold-delta.vercel.app", // Adjust this to your frontend URL
+    origin: "http://localhost:5173", // Adjust this to your frontend URL
     credentials: true, // Allow cookies to be sent with requests
   })
 );

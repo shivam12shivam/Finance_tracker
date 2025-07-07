@@ -21,6 +21,8 @@ import { Edit, Delete } from "@mui/icons-material";
 import DrawerAppBar from "./Navbar";
 import { useDispatch } from "react-redux";
 import { setExpenses } from "../redux/expenseSlice";
+import { useForm } from "react-hook-form";
+
 const categories = ["Food", "Rent", "Shopping", "Transport", "Other"];
 const payments = ["UPI", "Credit Card", "Cash", "Netbanking"];
 
@@ -29,13 +31,6 @@ export default function HomePage() {
   const [suggestions, setSuggestions] = useState([]);
   const [expenses, SetExpense] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({
-    amount: "",
-    category: "",
-    date: "",
-    payment: "",
-    notes: "",
-  });
   const [editingId, setEditingId] = useState(null);
   const [filter, setFilter] = useState({
     search: "",
@@ -47,6 +42,14 @@ export default function HomePage() {
   const [limitForm, setLimitForm] = useState({ category: "", amount: "" });
   const currentMonth = new Date().toISOString().slice(0, 7);
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm();
+
   const categoryTotals = expenses.reduce((acc, exp) => {
     const key = exp.category;
     acc[key] = (acc[key] || 0) + Number(exp.amount);
@@ -54,15 +57,16 @@ export default function HomePage() {
   }, {});
 
   const fetchLimits = async () => {
-    const res = await axios.get("https://finance-tracker-bgrn.onrender.com/limits", {
+    const res = await axios.get("http://localhost:3000/limits", {
       params: { month: currentMonth },
       withCredentials: true,
     });
     setLimits(res.data);
   };
+
   const handleSetLimit = async () => {
     await axios.post(
-      "https://finance-tracker-bgrn.onrender.com/limits",
+      "http://localhost:3000/limits",
       { ...limitForm, month: currentMonth },
       { withCredentials: true }
     );
@@ -70,35 +74,23 @@ export default function HomePage() {
     fetchLimits();
   };
 
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      try {
-        const res = await axios.get("https://finance-tracker-bgrn.onrender.com/suggestions", {
-          withCredentials: true,
-        });
-
-        if (Array.isArray(res.data)) {
-          setSuggestions(res.data);
-        } else {
-          setSuggestions([]);
-          console.warn("Unexpected suggestions response:", res.data);
-        }
-      } catch (err) {
-        console.error("Error fetching suggestions:", err);
-        setSuggestions([]); // fallback to avoid component crash
+  const fetchSuggestions = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/suggestions", {
+        withCredentials: true,
+      });
+      if (Array.isArray(res.data)) {
+        setSuggestions(res.data);
+      } else {
+        setSuggestions([]);
       }
-    };
-
-    fetchSuggestions();
-  }, []);
-
-  useEffect(() => {
-    fetchExpenses();
-    fetchLimits();
-  }, []);
+    } catch (err) {
+      setSuggestions([]);
+    }
+  };
 
   const fetchExpenses = async () => {
-    const res = await axios.get("https://finance-tracker-bgrn.onrender.com/expenses", {
+    const res = await axios.get("http://localhost:3000/expenses", {
       params: filter,
       withCredentials: true,
     });
@@ -106,39 +98,46 @@ export default function HomePage() {
     dispatch(setExpenses(res.data));
   };
 
+  useEffect(() => {
+    fetchSuggestions();
+    fetchExpenses();
+    fetchLimits();
+  }, []);
+
   const openAddDialog = () => {
-    setForm({ amount: "", category: "", date: "", payment: "", notes: "" });
+    reset({ amount: "", category: "", date: "", payment: "", notes: "" });
     setEditingId(null);
     setDialogOpen(true);
   };
 
   const openEditDialog = (expense) => {
-    setForm({ ...expense });
+    reset(expense);
     setEditingId(expense._id);
     setDialogOpen(true);
   };
 
-  const handleSubmit = async () => {
-    if (editingId) {
-      const res = await axios.put(
-        `https://finance-tracker-bgrn.onrender.com/expenses/${editingId}`,
-        form,
-        { withCredentials: true }
-      );
-      console.log("response from backend when updating ", res.data);
-    } else {
-      console.log("form", form);
-      const res = await axios.post("https://finance-tracker-bgrn.onrender.com/expenses/add", form, {
-        withCredentials: true,
-      });
-      console.log("response from backend", res.data);
+  const onSubmit = async (data) => {
+    try {
+      if (editingId) {
+        await axios.put(
+          `http://localhost:3000/expenses/${editingId}`,
+          data,
+          { withCredentials: true }
+        );
+      } else {
+        await axios.post("http://localhost:3000/expenses/add", data, {
+          withCredentials: true,
+        });
+      }
+      setDialogOpen(false);
+      fetchExpenses();
+    } catch (err) {
+      console.error("Submission error:", err);
     }
-    setDialogOpen(false);
-    fetchExpenses();
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`https://finance-tracker-bgrn.onrender.com/expenses/${id}`, {
+    await axios.delete(`http://localhost:3000/expenses/${id}`, {
       withCredentials: true,
     });
     fetchExpenses();
@@ -155,6 +154,8 @@ export default function HomePage() {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <DrawerAppBar />
+
+  
       <div className="mb-4 bg-[#d8bdb49e] p-4 rounded shadow">
         <h2 className="text-lg font-semibold mb-2">Monthly Limits</h2>
         <div className="flex flex-wrap items-center gap-4">
@@ -162,7 +163,7 @@ export default function HomePage() {
             label="Category"
             select
             size="small"
-            className="w-42" 
+            className="w-42"
             value={limitForm.category}
             onChange={(e) =>
               setLimitForm({ ...limitForm, category: e.target.value })
@@ -191,7 +192,7 @@ export default function HomePage() {
             color="secondary"
             onClick={async () => {
               const res = await axios.post(
-                "https://finance-tracker-bgrn.onrender.com/summary/save",
+                "http://localhost:3000/summary/save",
                 {},
                 { withCredentials: true }
               );
@@ -245,14 +246,21 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Heading + Add Button */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Expenses</h1>
-        <Button variant="contained" color="primary" onClick={openAddDialog}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            openAddDialog();
+          }}
+        >
           Add Expense
         </Button>
       </div>
 
-      {/* Filter & Search */}
+      {/* Filters */}
       <div className="flex flex-wrap gap-4 mb-4">
         <TextField
           label="Search Amount"
@@ -263,7 +271,6 @@ export default function HomePage() {
         <TextField
           label="Category"
           size="small"
-          className="w-42" 
           select
           value={filter.category}
           onChange={(e) => handleFilterChange("category", e.target.value)}
@@ -279,7 +286,6 @@ export default function HomePage() {
           label="Payment"
           size="small"
           select
-          className="w-42" 
           value={filter.payment}
           onChange={(e) => handleFilterChange("payment", e.target.value)}
         >
@@ -303,19 +309,12 @@ export default function HomePage() {
         </Button>
       </div>
 
-      {/* Expenses Table */}
+      {/* Table */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              {[
-                "Amount",
-                "Category",
-                "Date",
-                "Payment",
-                "Notes",
-                "Actions",
-              ].map((head) => (
+              {["Amount", "Category", "Date", "Payment", "Notes", "Actions"].map((head) => (
                 <TableCell key={head} className="font-bold bg-[#FCE6E6]">
                   {head}
                 </TableCell>
@@ -332,7 +331,7 @@ export default function HomePage() {
                 <TableCell>{exp.notes}</TableCell>
                 <TableCell>
                   <IconButton onClick={() => openEditDialog(exp)}>
-                    <Edit className="text-emerald-400"/>
+                    <Edit className="text-emerald-400" />
                   </IconButton>
                   <IconButton onClick={() => handleDelete(exp._id)}>
                     <Delete className="text-red-600" />
@@ -344,64 +343,69 @@ export default function HomePage() {
         </Table>
       </TableContainer>
 
-      {/* Add/Edit Dialog */}
+      
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-        <DialogTitle>{editingId ? "Edit Expense" : "Add Expense"}</DialogTitle>
-        <DialogContent className="!flex !flex-col gap-4">
-          <TextField
-            label="Amount"
-            type="number"
-            value={form.amount}
-            onChange={(e) => setForm({ ...form, amount: e.target.value })}
-            fullWidth
-          />
-          <TextField
-            label="Category"
-            select
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-            fullWidth
-          >
-            {categories.map((cat) => (
-              <MenuItem key={cat} value={cat}>
-                {cat}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            label="Date"
-            type="date"
-            value={form.date}
-            onChange={(e) => setForm({ ...form, date: e.target.value })}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-          />
-          <TextField
-            label="Payment Method"
-            select
-            value={form.payment}
-            onChange={(e) => setForm({ ...form, payment: e.target.value })}
-            fullWidth
-          >
-            {payments.map((pay) => (
-              <MenuItem key={pay} value={pay}>
-                {pay}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            label="Notes"
-            value={form.notes}
-            onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSubmit}>
-            {editingId ? "Update" : "Add"}
-          </Button>
-        </DialogActions>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogTitle>{editingId ? "Edit Expense" : "Add Expense"}</DialogTitle>
+          <DialogContent className="!flex !flex-col gap-4">
+            <TextField
+              label="Amount (Required)"
+              type="number"
+              {...register("amount", { required: "Amount is required" })}
+              fullWidth
+              error={!!errors.amount}
+              helperText={errors.amount?.message}
+            />
+            <TextField
+              label="Category (Required)"
+              select
+              {...register("category", { required: "Category is required" })}
+              fullWidth
+              error={!!errors.category}
+              helperText={errors.category?.message}
+            >
+              {categories.map((cat) => (
+                <MenuItem key={cat} value={cat}>
+                  {cat}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label="Date (Required)"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              {...register("date", { required: "Date is required" })}
+              fullWidth
+              error={!!errors.date}
+              helperText={errors.date?.message}
+            />
+            <TextField
+              label="Payment Method (Required)"
+              select
+              {...register("payment", { required: "Payment method is required" })}
+              fullWidth
+              error={!!errors.payment}
+              helperText={errors.payment?.message}
+            >
+              {payments.map((pay) => (
+                <MenuItem key={pay} value={pay}>
+                  {pay}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label="Notes (Optional)"
+              {...register("notes")}
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button variant="contained" type="submit">
+              {editingId ? "Update" : "Add"}
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
     </div>
   );

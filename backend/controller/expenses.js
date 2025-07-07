@@ -89,3 +89,27 @@ export const updateExpense = async (req, res) => {
   }
 };
 
+export const monthlyexpenses = async (req, res) => {
+  const { month, year } = req.query;
+
+  const monthMap = {
+    January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
+    July: 6, August: 7, September: 8, October: 9, November: 10, December: 11,
+  };
+  
+  const monthIndex = monthMap[month];
+  
+
+  const start = new Date(year, monthIndex, 1);
+  const end = new Date(year, monthIndex + 1, 1);
+
+  const expenses = await Expense.find({
+    userId: req.user._id,
+    date: { $gte: start, $lt: end },
+  });
+
+  const total = expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+  console.log(total);
+  res.json({ expenses, total });
+};
+

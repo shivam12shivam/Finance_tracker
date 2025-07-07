@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setLogin } from "./redux/userSlice";
 import Dashboard from "./components/DashBoard";
+import MonthlyReport from "./components/MonthlyExpense";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -21,7 +22,7 @@ function App() {
     const checkAuthStatus = async () => {
       try {
         const response = await axios.get(
-          "https://finance-tracker-bgrn.onrender.com/auth/check-auth",
+          "http://localhost:3000/auth/check-auth",
           {
             withCredentials: true,
           }
@@ -71,6 +72,10 @@ function App() {
         <Route
           path="/dashboard"
           element={isAuth ? <Dashboard /> : <Navigate to="/signup" />}
+        />
+        <Route
+          path="/monthlyreport"
+          element={isAuth ? <MonthlyReport/> : <Navigate to="/signup" />}
         />
         
       </Routes>

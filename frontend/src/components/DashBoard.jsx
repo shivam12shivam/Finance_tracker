@@ -51,6 +51,12 @@ export default function Dashboard() {
     name: key,
     value,
   }));
+//   Object.entries():
+// Only used on objects
+// Converts them to an array of [key, value] pairs
+// Often used with map() or reduce() afterward
+
+
 
   const dailySpending = currentMonthExpenses.reduce((acc, curr) => {
     const day = new Date(curr.date).toLocaleDateString();

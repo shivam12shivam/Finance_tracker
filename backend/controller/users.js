@@ -20,9 +20,7 @@ export const register = async (req, res) => {
       .status(201)
       .json({ message: "User registered successfully", user: newUser });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error registering user", error: error.message });
+    res.json({ message: "Error registering user", error: error.message });
   }
 };
 
@@ -47,25 +45,25 @@ export const login = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    // res.cookie("token", token, {
-    //   httpOnly: true,
-    //   secure: false, 
-    //   sameSite: "lax",
-    //   maxAge: 24 * 60 * 60 * 1000,
-    // });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, 
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
-    res.cookie("token", token, { 
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      });
+    // res.cookie("token", token, { 
+    //     httpOnly: true,
+    //     secure: process.env.NODE_ENV === "production",
+    //     sameSite: "none",
+    //     maxAge: 24 * 60 * 60 * 1000,
+    //   });
       
 
     console.log("cookie created", email);
-
     res.json({ token, user });
   } catch (error) {
-    res.json({ message: "Error logging in", error: error.message });
+    
   }
+  
 };

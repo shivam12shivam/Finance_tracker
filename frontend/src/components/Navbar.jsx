@@ -23,7 +23,9 @@ const drawerWidth = 240;
 const navItems = [
   { label: "Home", path: "/" },
   { label: "DashBoard", path: "/dashboard" },
+  { label: "Monthly Report", path: "/monthlyreport" },
   { label: "Logout" },
+  
 ];
 
 export default function DrawerAppBar(props) {
@@ -35,7 +37,7 @@ export default function DrawerAppBar(props) {
   const handleLogout = async () => {
     try {
       await axios.post(
-        "https://finance-tracker-bgrn.onrender.com/auth/logout",
+        "http://localhost:3000/auth/logout",
         {},
         { withCredentials: true }
       );
