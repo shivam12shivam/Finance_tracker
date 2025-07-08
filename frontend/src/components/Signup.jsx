@@ -21,7 +21,7 @@ export default function SignUp() {
     setSubmittedData(formData);
     console.log(formData);
     const res = await axios.post(
-      "http://localhost:3000/auth/register",
+      "https://finance-tracker-bgrn.onrender.com/auth/register",
       formData
     );
     reset();

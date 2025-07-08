@@ -57,7 +57,7 @@ export default function HomePage() {
   }, {});
 
   const fetchLimits = async () => {
-    const res = await axios.get("http://localhost:3000/limits", {
+    const res = await axios.get("https://finance-tracker-bgrn.onrender.com/limits", {
       params: { month: currentMonth },
       withCredentials: true,
     });
@@ -66,7 +66,7 @@ export default function HomePage() {
 
   const handleSetLimit = async () => {
     await axios.post(
-      "http://localhost:3000/limits",
+      "https://finance-tracker-bgrn.onrender.com/limits",
       { ...limitForm, month: currentMonth },
       { withCredentials: true }
     );
@@ -76,7 +76,7 @@ export default function HomePage() {
 
   const fetchSuggestions = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/suggestions", {
+      const res = await axios.get("https://finance-tracker-bgrn.onrender.com/suggestions", {
         withCredentials: true,
       });
       if (Array.isArray(res.data)) {
@@ -90,7 +90,7 @@ export default function HomePage() {
   };
 
   const fetchExpenses = async () => {
-    const res = await axios.get("http://localhost:3000/expenses", {
+    const res = await axios.get("https://finance-tracker-bgrn.onrender.com/expenses", {
       params: filter,
       withCredentials: true,
     });
@@ -120,12 +120,12 @@ export default function HomePage() {
     try {
       if (editingId) {
         await axios.put(
-          `http://localhost:3000/expenses/${editingId}`,
+          `https://finance-tracker-bgrn.onrender.com/expenses/${editingId}`,
           data,
           { withCredentials: true }
         );
       } else {
-        await axios.post("http://localhost:3000/expenses/add", data, {
+        await axios.post("https://finance-tracker-bgrn.onrender.com/expenses/add", data, {
           withCredentials: true,
         });
       }
@@ -137,7 +137,7 @@ export default function HomePage() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:3000/expenses/${id}`, {
+    await axios.delete(`https://finance-tracker-bgrn.onrender.com/expenses/${id}`, {
       withCredentials: true,
     });
     fetchExpenses();
@@ -192,7 +192,7 @@ export default function HomePage() {
             color="secondary"
             onClick={async () => {
               const res = await axios.post(
-                "http://localhost:3000/summary/save",
+                "https://finance-tracker-bgrn.onrender.com/summary/save",
                 {},
                 { withCredentials: true }
               );

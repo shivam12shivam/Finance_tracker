@@ -24,7 +24,7 @@ export default function LogIn() {
 
     try {
       console.log("Login data:", data);
-      const res = await axios.post("http://localhost:3000/auth/login", data, {
+      const res = await axios.post("https://finance-tracker-bgrn.onrender.com/auth/login", data, {
         withCredentials: true,
       });
       if (res.data.message && (!res.data.user || !res.data.token)) {
@@ -38,9 +38,7 @@ export default function LogIn() {
           token: res.data.token,
         })
       );
-      <Alert variant="filled" severity="success">
-        Login Successful
-      </Alert>;
+    
       navigate("/");
     } catch (error) {
       const message =

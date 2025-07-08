@@ -21,20 +21,23 @@ const years = ["2024", "2025"];
 export default function MonthlyReport() {
   const [selectedMonth, setSelectedMonth] = useState("January");
   const [selectedYear, setSelectedYear] = useState("2025");
-  const [expenses, setExpenses] = useState([]);
+  const [expenses, setExpenses] = useState({});
 
   const [total, setTotal] = useState(0);
 
   const getExpenses = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/expenses/monthly", {
+      const res = await axios.get("https://finance-tracker-bgrn.onrender.com/expenses/monthly", {
         params: {
           month: selectedMonth,
           year: selectedYear,
         },
         withCredentials: true,
       });
-      setExpenses(res.data.expenses);
+      setExpenses(res.data.categoryTotals);
+      console.log(res.data);
+      console.log(res.data.categoryTotals);
+
       setTotal(res.data.total);
     } catch (err) {
       console.error("Error fetching expenses:", err);
@@ -81,18 +84,18 @@ export default function MonthlyReport() {
         </button>
       </div>
 
-      {expenses.length > 0 ? (
+      {Object.entries(expenses).length > 0 ? (
         <ul className="list-disc pl-6">
-          {expenses.map((exp) => (
-            <li key={exp._id}>
-              ₹{exp.amount} - {exp.category} on{" "}
-              {new Date(exp.date).toLocaleDateString()}
+          {Object.entries(expenses).map(([category, amount]) => (
+            <li key={category}>
+              ₹{amount} spent on {category}
             </li>
           ))}
         </ul>
       ) : (
         <p>No expenses found for this period.</p>
       )}
+
       <p className="mt-4 font-semibold text-lg">Total Spent: ₹{total}</p>
     </div>
   );

@@ -108,8 +108,17 @@ export const monthlyexpenses = async (req, res) => {
     date: { $gte: start, $lt: end },
   });
 
+  // const ob=[];
+  const categoryTotals = expenses.reduce((acc, exp) => {
+    const key = exp.category;
+    acc[key] = (acc[key] || 0) + Number(exp.amount);
+    return acc;
+    
+  }, {});
+
+  console.log(categoryTotals);
   const total = expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
   console.log(total);
-  res.json({ expenses, total });
+  res.json({ categoryTotals, total });
 };
 
